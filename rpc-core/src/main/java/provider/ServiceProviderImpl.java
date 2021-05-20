@@ -16,7 +16,7 @@ public class ServiceProviderImpl implements ServiceProvider{
     //X -> A
     //Y -> A
     //一个服务对象可以实现多个接口，但一个接口只能由一个服务实体对象提供服务
-    private final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+    private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
     //registeredService作为一个set，保存已经注册好的服务名
     private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
