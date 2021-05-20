@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RPCRequest implements Serializable {
+public class RpcRequest implements Serializable {
     /**
      * 请求Id
      */

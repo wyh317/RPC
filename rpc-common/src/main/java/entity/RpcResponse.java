@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 @Data
 @NoArgsConstructor
-public class RPCResponse<T> implements Serializable {
+public class RpcResponse<T> implements Serializable {
     /**
      * 响应对应的请求Id
      */
@@ -29,16 +29,16 @@ public class RPCResponse<T> implements Serializable {
      */
     private T data;
 
-    public static <T> RPCResponse<T> success(T data, String requestId){
-        RPCResponse<T> response = new RPCResponse<T>();
+    public static <T> RpcResponse<T> success(T data, String requestId){
+        RpcResponse<T> response = new RpcResponse<T>();
         response.setRequestId(requestId);
         response.setStatusCode(ResponseCode.SUCCESS.getCode());
         response.setData(data);
         return response;
     }
 
-    public static <T> RPCResponse<T> fail(ResponseCode code, String requestId){
-        RPCResponse<T> response = new RPCResponse<T>();
+    public static <T> RpcResponse<T> fail(ResponseCode code, String requestId){
+        RpcResponse<T> response = new RpcResponse<T>();
         response.setRequestId(requestId);
         response.setStatusCode(code.getCode());
         response.setMessage(code.getMessage());

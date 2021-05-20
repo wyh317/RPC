@@ -1,11 +1,11 @@
 package exception;
-import enumeration.RPCError;
+import enumeration.RpcError;
 
 /**
  * RPC调用异常
  */
 public class RpcException extends RuntimeException{
-    public RpcException(RPCError error, String detail) {
+    public RpcException(RpcError error, String detail) {
         super(error.getMessage() + ": " + detail);
     }
 
@@ -13,7 +13,7 @@ public class RpcException extends RuntimeException{
         super(message, cause);
     }
 
-    public RpcException(RPCError error) {
+    public RpcException(RpcError error) {
         super(error.getMessage());
     }
 }

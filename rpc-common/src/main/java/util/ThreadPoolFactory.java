@@ -5,14 +5,14 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 /**
  * 用于创建线程池的工具类
  */
-public class ThreadPollFactory {
+public class ThreadPoolFactory {
     //线程池参数
     private static final int CORE_POOL_SIZE = 10;
     private static final int MAXIMUM_POOL_SIZE = 100;
     private static final int KEEP_ALIVE_TIME = 1;
     private static final int BLOCKING_QUEUE_CAPACITY = 100;
 
-    private ThreadPollFactory(){
+    private ThreadPoolFactory(){
 
     }
 
