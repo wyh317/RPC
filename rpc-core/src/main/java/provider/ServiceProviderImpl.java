@@ -5,6 +5,8 @@ import exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +24,7 @@ public class ServiceProviderImpl implements ServiceProvider{
 
 
     @Override
-    public <T> void addServiceProvider(T service) {
+    public <T> void addService(T service) {
         String serviceName = service.getClass().getCanonicalName();
         //如果service已经注册过了，直接返回，否则将这个服务类名加入到set中
         if(registeredService.contains(serviceName))
@@ -41,11 +43,20 @@ public class ServiceProviderImpl implements ServiceProvider{
     }
 
     @Override
-    public Object getServiceProvider(String serviceName) {
+    public Object getService(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if (service == null) {
             throw new RpcException(RpcError.SERVICE_NOT_FOUND);
         }
         return service;
+    }
+
+    @Override
+    public List<Object> getAllService() {
+        List<Object> serviceList = new LinkedList<>();
+        for(Object service : serviceMap.values()){
+            serviceList.add(service);
+        }
+        return serviceList;
     }
 }

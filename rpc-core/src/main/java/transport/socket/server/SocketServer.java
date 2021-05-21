@@ -1,7 +1,6 @@
 package transport.socket.server;
 
 import handler.RequestHandler;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import enumeration.RpcError;
 import exception.RpcException;
 import org.slf4j.Logger;
@@ -17,6 +16,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import util.ThreadPoolFactory;
 /**
@@ -37,12 +37,12 @@ public class SocketServer implements RpcServer {
     //本地注册表
     private final ServiceProvider serviceProvider;
 
-    public SocketServer(String host, int port){
+    public SocketServer(String host, int port, ServiceProvider serviceProvider){
         this.port = port;
         this.host = host;
         threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
         this.serviceRegistry = new NacosServiceRegistry();
-        this.serviceProvider = new ServiceProviderImpl();
+        this.serviceProvider = serviceProvider;
     }
 
 
@@ -85,10 +85,22 @@ public class SocketServer implements RpcServer {
             logger.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
-        //先在本地注册表上注册服务（具体实现）
-        serviceProvider.addServiceProvider(service);
         //再在远程注册表Nacos上注册：告诉Nacos本服务提供者提供了什么服务（接口），地址是什么
         serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
-        start();
+    }
+
+    /**
+     * 向Nacos发布本地注册表上的所有服务
+     */
+    @Override
+    public void publishAllService() {
+        //获得本地注册表上的所有服务实体
+        List<Object> serviceList = serviceProvider.getAllService();
+        for(Object service : serviceList){
+            //找到某一个服务实体所实现的所有接口，对每一个接口都调用一次publishService
+            Class<?>[] interfaces = service.getClass().getInterfaces();
+            for(Class clazz: interfaces)
+                publishService(service, clazz);
+        }
     }
 }

@@ -18,7 +18,12 @@ public interface RpcServer {
     void setSerializer(CommonSerializer serializer);
 
     /**
-     * 发布服务
+     * 发布某项服务
      */
     <T> void publishService(Object service, Class<T> serviceClass);
+
+    /**
+     * 向Nacos发布本地注册表上的所有服务
+     */
+    void publishAllService();
 }

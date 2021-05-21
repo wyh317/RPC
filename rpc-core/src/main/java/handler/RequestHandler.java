@@ -28,7 +28,7 @@ public class RequestHandler {
     public Object handle(RpcRequest rpcRequest){
         Object result = null;
         //根据RPC请求中的接口名，在本地注册表中找到服务实体对象
-        Object service = serviceProvider.getServiceProvider(rpcRequest.getInterfaceName());
+        Object service = serviceProvider.getService(rpcRequest.getInterfaceName());
         //找到RPC请求的方法，并用服务实体对象中的该方法处理请求，得到结果
         try {
             result = invokeTargetMethod(rpcRequest, service);

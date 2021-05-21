@@ -22,6 +22,7 @@ import serializer.CommonSerializer;
 import transport.RpcServer;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  * 采用Netty方式实现的服务器端
@@ -38,15 +39,15 @@ public class NettyServer implements RpcServer {
     //服务器端采用的序列化器
     private CommonSerializer serializer;
 
-    public NettyServer(String host, int port){
+    public NettyServer(String host, int port, ServiceProvider serviceProvider){
         this.host = host;
         this.port = port;
         serviceRegistry  = new NacosServiceRegistry();
-        serviceProvider = new ServiceProviderImpl() ;
+        this.serviceProvider = serviceProvider ;
     }
 
     /**
-     * 发布服务
+     * 向远程注册中心Nacos发布服务
      * @param service 某个服务实现类
      * @param serviceClass 客户端和服务端都认得的服务接口
      */
@@ -56,12 +57,25 @@ public class NettyServer implements RpcServer {
             logger.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
-        //先在本地注册表上注册服务（具体实现）
-        serviceProvider.addServiceProvider(service);
-        //再在远程注册表Nacos上注册：告诉Nacos本服务提供者提供了什么服务（接口），地址是什么
+        //在远程注册中心Nacos上注册：告诉Nacos本服务提供者提供了什么服务（接口），地址是什么
         serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
-        start();
     }
+
+    /**
+     * 向Nacos发布本地注册表上的所有服务
+     */
+    @Override
+    public void publishAllService() {
+        //获得本地注册表上的所有服务实体
+        List<Object> serviceList = serviceProvider.getAllService();
+        for(Object service : serviceList){
+            //找到某一个服务实体所实现的所有接口，对每一个接口都调用一次publishService
+            Class<?>[] interfaces = service.getClass().getInterfaces();
+            for(Class clazz: interfaces)
+                publishService(service, clazz);
+        }
+    }
+
 
     /**
      * 启动服务端
