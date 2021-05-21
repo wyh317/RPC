@@ -17,7 +17,7 @@ public class NettyTestServer {
         serviceProvider.addService(helloService);
         serviceProvider.addService(hiService);
         //创建Netty服务端
-        RpcServer server = new NettyServer("127.0.0.1", 9998, serviceProvider);
+        RpcServer server = new NettyServer("127.0.0.1", 9999, serviceProvider);
         //设置服务端序列化器
         server.setSerializer(new ProtobufSerializer());
         //将本地服务注册表上的所有服务都发布到远程Nacos

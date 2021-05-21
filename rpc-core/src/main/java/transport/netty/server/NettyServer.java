@@ -42,7 +42,7 @@ public class NettyServer implements RpcServer {
     public NettyServer(String host, int port, ServiceProvider serviceProvider){
         this.host = host;
         this.port = port;
-        serviceRegistry  = new NacosServiceRegistry();
+        serviceRegistry = new NacosServiceRegistry();
         this.serviceProvider = serviceProvider ;
     }
 

@@ -1,6 +1,7 @@
 package transport;
 
 import entity.RpcRequest;
+import loadbalancer.LoadBalancer;
 import serializer.CommonSerializer;
 
 /**
@@ -14,9 +15,4 @@ public interface RpcClient {
      */
     Object sendRequest(RpcRequest rpcRequest);
 
-    /**
-     * 设置序列化器
-     * @param serializer 序列化器
-     */
-    void setSerializer(CommonSerializer serializer);
 }

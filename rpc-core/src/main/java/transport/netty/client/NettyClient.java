@@ -11,6 +11,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
+import loadbalancer.LoadBalancer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import registry.NacosServiceRegistry;
@@ -40,8 +41,10 @@ public class NettyClient implements RpcClient {
                 .option(ChannelOption.SO_KEEPALIVE, true);
     }
 
-    public NettyClient() {
-        this.serviceRegistry = new NacosServiceRegistry();
+    //在构造客户端的时候，就要设置好序列化器和负载均衡器
+    public NettyClient(CommonSerializer serializer, LoadBalancer loadBalancer){
+        this.serializer = serializer;
+        this.serviceRegistry = new NacosServiceRegistry(loadBalancer);
     }
 
     @Override
@@ -77,8 +80,4 @@ public class NettyClient implements RpcClient {
         return result.get();
     }
 
-    @Override
-    public void setSerializer(CommonSerializer serializer) {
-        this.serializer = serializer;
-    }
 }

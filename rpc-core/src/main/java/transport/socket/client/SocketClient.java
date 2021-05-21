@@ -5,6 +5,7 @@ import entity.RpcResponse;
 import enumeration.ResponseCode;
 import enumeration.RpcError;
 import exception.RpcException;
+import loadbalancer.LoadBalancer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import registry.NacosServiceRegistry;
@@ -29,11 +30,12 @@ public class SocketClient implements RpcClient {
     private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
 
     private CommonSerializer serializer;
-
     private final ServiceRegistry serviceRegistry;
 
-    public SocketClient(){
-        this.serviceRegistry = new NacosServiceRegistry();
+    //在构造客户端的时候，就要设置好序列化器和负载均衡器
+    public SocketClient(CommonSerializer serializer, LoadBalancer loadBalancer){
+        this.serializer = serializer;
+        this.serviceRegistry = new NacosServiceRegistry(loadBalancer);
     }
 
     @Override
@@ -74,8 +76,4 @@ public class SocketClient implements RpcClient {
         }
     }
 
-    @Override
-    public void setSerializer(CommonSerializer serializer) {
-        this.serializer = serializer;
-    }
 }

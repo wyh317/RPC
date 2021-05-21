@@ -6,6 +6,8 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import enumeration.RpcError;
 import exception.RpcException;
+import loadbalancer.LoadBalancer;
+import loadbalancer.RandomLoadBalancer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +23,8 @@ public class NacosServiceRegistry implements ServiceRegistry{
     //Nacos地址
     private static final String SERVER_ADDR = "127.0.0.1:8848";
     private static final NamingService namingService;
-
+    //负载均衡器
+    private final LoadBalancer loadBalancer;
     static {
         //通过 NamingFactory 创建 NamingService 连接 Nacos
         try {
@@ -30,6 +33,12 @@ public class NacosServiceRegistry implements ServiceRegistry{
             logger.error("连接到Nacos时有错误发生: ", e);
             throw new RpcException(RpcError.FAILED_TO_CONNECT_TO_SERVICE_REGISTRY);
         }
+    }
+    public NacosServiceRegistry(){
+        this.loadBalancer = new RandomLoadBalancer();
+    }
+    public NacosServiceRegistry(LoadBalancer loadBalancer){
+         this.loadBalancer = loadBalancer;
     }
 
     /**
@@ -56,7 +65,8 @@ public class NacosServiceRegistry implements ServiceRegistry{
     public InetSocketAddress lookupService(String serviceName) {
         try{
             List<Instance> instacnes = namingService.getAllInstances(serviceName);
-            Instance instance = instacnes.get(0);
+            //根据客户端提供的负载均衡器从服务提供者列表中选择出一个
+            Instance instance = loadBalancer.select(instacnes);
             return new InetSocketAddress(instance.getIp(), instance.getPort());
         } catch (NacosException e) {
             logger.error("获取服务时有错误发生:", e);
